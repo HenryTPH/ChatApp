@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { signInWithPopup, getAuth } from 'firebase/auth';
-import { getFirestore  } from 'firebase/firestore';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: "AIzaSyBueLoivde56TbKcfEWzB9f2fBWgaFn5Z0",
     authDomain: "chat-app-cbf00.firebaseapp.com",
+    databaseURL: "https://chat-app-cbf00-default-rtdb.firebaseio.com",
     projectId: "chat-app-cbf00",
     storageBucket: "chat-app-cbf00.appspot.com",
     messagingSenderId: "876087306613",
@@ -15,9 +15,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+console.log("+++++++++++++++++++++++++++++++++")
+console.log(app.name)
 
 const auth = getAuth();
 const db = getFirestore();
+
+connectAuthEmulator(auth, 'http://localhost:9099');
+if(window.location.hostname === 'localhost'){
+  connectFirestoreEmulator(db, 'localhost', 8080)
+}
 
 export { db, auth, app };
