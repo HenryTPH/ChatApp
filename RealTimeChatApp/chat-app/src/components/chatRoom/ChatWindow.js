@@ -67,7 +67,7 @@ const MessageListStyled = styled.div`
 `
 
 export default function ChatWindow(){
-    const { selectedRoom, members } = useContext(AppContext)
+    const { selectedRoom, members, setIsInviteMemberVisible } = useContext(AppContext)
     console.log({ members })
     return(
         <WrapperStyled>
@@ -78,7 +78,7 @@ export default function ChatWindow(){
                 </div>
                 <div>
                     <ButtonGroupStyled>
-                        <Button icon={<UserAddOutlined />} type='text'>Invite</Button>
+                        <Button icon={<UserAddOutlined />} type='text' onClick={() => setIsInviteMemberVisible(true)}>Invite</Button>
                         <Avatar.Group size="small" maxCount = {2}>
                             {
                                 members.map(member => <Tooltip title={member.displayName} key={member.id}>

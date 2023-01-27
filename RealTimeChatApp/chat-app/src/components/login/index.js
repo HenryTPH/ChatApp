@@ -3,7 +3,7 @@ import { Row, Col, Button, Typography } from 'antd' //In ant, there are 24 cols
 import { signInWithPopup, FacebookAuthProvider, getAdditionalUserInfo } from "firebase/auth";
 import { useNavigate } from 'react-router-dom' // UseHistory was replaced by useNagigate
 import { auth } from '../../firebase/config';
-import { addDocument } from '../../firebase/services';
+import { addDocument, generateKeywords } from '../../firebase/services';
 
 const {Title} = Typography
 const fbProvider = new FacebookAuthProvider()
@@ -27,7 +27,8 @@ export default function Login(){
             email: user.email,
             photoURL: user.photoURL,
             uid: user.uid,
-            providerId: additionalInfo.providerId
+            providerId: additionalInfo.providerId,
+            keywords: generateKeywords(user.displayName)
         })
         console.log("============")
         console.log(newUser)
