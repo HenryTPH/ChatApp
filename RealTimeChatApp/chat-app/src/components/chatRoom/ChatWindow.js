@@ -1,9 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Row, Col, Button, Avatar, Tooltip, Form, Input, Alert } from 'antd';
 import styled from "styled-components";
 import { UserAddOutlined } from "@ant-design/icons";
 import Message from "./Message";
 import { AppContext } from "../../Context/AppProvider";
+import { addDocument } from "../../firebase/services";
+import { AuthContext } from "../../Context/AuthProvider";
+import useFirestore from "../../hooks/useFireStore";
+import { formatRelative } from 'date-fns'
 
 const HeaderStyled = styled.div`
     display: flex;
@@ -68,7 +72,36 @@ const MessageListStyled = styled.div`
 
 export default function ChatWindow(){
     const { selectedRoom, members, setIsInviteMemberVisible } = useContext(AppContext)
+    const { user:{
+        uid, photoURL, displayName
+    }} = useContext(AuthContext)
     console.log({ members })
+    const [inputValue, setInputValue] = useState('')
+    const [form] = Form.useForm()
+    const handleInputChange = (eventChange) => {
+        setInputValue(eventChange.target.value)
+    }
+
+    const handleOnSubmit = () => {
+        addDocument('messages', {
+            text: inputValue,
+            uid,
+            photoURL,
+            roomId: selectedRoom.id,
+            displayName
+        })
+        form.resetFields(['message'])
+    }
+
+    const condition = React.useMemo(() => ({
+        fieldName: 'roomId',
+        operator: '==',
+        compareValue: selectedRoom.id
+    }), [selectedRoom.id])
+
+    const messages = useFirestore('messages', condition)
+    console.log(messages)
+
     return(
         <WrapperStyled>
             {
@@ -94,16 +127,26 @@ export default function ChatWindow(){
     
                 <ContentStyled>
                     <MessageListStyled>
-                        <Message text="Test" photoURL={null} displayName="Henry" createdAt={123123123123123} />
-                        <Message text="Tet" photoURL={null} displayName="Kenny" createdAt={123123123123123} />
-                        <Message text="Hello" photoURL={null} displayName="Danny" createdAt={123123123123123} />
-                        <Message text="Love" photoURL={null} displayName="Manny" createdAt={123123123123123} />
+                        {
+                            messages.map(mess => <Message
+                                key={mess.id}
+                                text={mess.text}
+                                photoURL={mess.photoURL} 
+                                displayName={mess.displayName} 
+                                createdAt={mess.createdAt}
+                                />)
+                        }
                     </MessageListStyled>
-                    <FormStyled>
-                        <Form.Item>
-                            <Input placeholder="New message" bordered={false} autoComplete="off" />
+                    <FormStyled form={form}>
+                        <Form.Item name='message'>
+                            <Input 
+                                onChange={handleInputChange}
+                                onPressEnter={handleOnSubmit}
+                                placeholder="New message" 
+                                bordered={false} 
+                                autoComplete="off" />
                         </Form.Item>
-                        <Button type="primary">Send</Button>
+                        <Button type="primary" onClick={handleOnSubmit}>Send</Button>
                     </FormStyled>
                 </ContentStyled></>
                 ) : <Alert message="Let choose a room" type="info" showIcon style={{ margin: 5}} closable/>
