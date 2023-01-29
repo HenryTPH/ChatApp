@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Row, Col, Button, Avatar, Tooltip, Form, Input } from 'antd';
+import { Row, Col, Button, Avatar, Tooltip, Form, Input, Alert } from 'antd';
 import styled from "styled-components";
 import { UserAddOutlined } from "@ant-design/icons";
 import Message from "./Message";
@@ -71,39 +71,44 @@ export default function ChatWindow(){
     console.log({ members })
     return(
         <WrapperStyled>
-            <HeaderStyled>
-                <div className='header__info'>
-                    <p className='header__title'>{ selectedRoom.name }</p>
-                    <span className='header__description'>{ selectedRoom.description }</span>
-                </div>
-                <div>
-                    <ButtonGroupStyled>
-                        <Button icon={<UserAddOutlined />} type='text' onClick={() => setIsInviteMemberVisible(true)}>Invite</Button>
-                        <Avatar.Group size="small" maxCount = {2}>
-                            {
-                                members.map(member => <Tooltip title={member.displayName} key={member.id}>
-                                                            <Avatar src={member.photoURL}>{member.photoURL ? '' : member.displayName.charAt(0)?.toUpperCase()}</Avatar>
-                                                       </Tooltip>)
-                            }
-                        </Avatar.Group>
-                    </ButtonGroupStyled>                    
-                </div>
-            </HeaderStyled>
-
-            <ContentStyled>
-                <MessageListStyled>
-                    <Message text="Test" photoURL={null} displayName="Henry" createdAt={123123123123123} />
-                    <Message text="Tet" photoURL={null} displayName="Kenny" createdAt={123123123123123} />
-                    <Message text="Hello" photoURL={null} displayName="Danny" createdAt={123123123123123} />
-                    <Message text="Love" photoURL={null} displayName="Manny" createdAt={123123123123123} />
-                </MessageListStyled>
-                <FormStyled>
-                    <Form.Item>
-                        <Input placeholder="New message" bordered={false} autoComplete="off" />
-                    </Form.Item>
-                    <Button type="primary">Send</Button>
-                </FormStyled>
-            </ContentStyled>
+            {
+                selectedRoom.id ? (
+                    <><HeaderStyled>
+                    <div className='header__info'>
+                        <p className='header__title'>{ selectedRoom.name }</p>
+                        <span className='header__description'>{ selectedRoom.description }</span>
+                    </div>
+                    <div>
+                        <ButtonGroupStyled>
+                            <Button icon={<UserAddOutlined />} type='text' onClick={() => setIsInviteMemberVisible(true)}>Invite</Button>
+                            <Avatar.Group size="small" maxCount = {2}>
+                                {
+                                    members.map(member => <Tooltip title={member.displayName} key={member.id}>
+                                                                <Avatar src={member.photoURL}>{member.photoURL ? '' : member.displayName.charAt(0)?.toUpperCase()}</Avatar>
+                                                           </Tooltip>)
+                                }
+                            </Avatar.Group>
+                        </ButtonGroupStyled>                    
+                    </div>
+                </HeaderStyled>
+    
+                <ContentStyled>
+                    <MessageListStyled>
+                        <Message text="Test" photoURL={null} displayName="Henry" createdAt={123123123123123} />
+                        <Message text="Tet" photoURL={null} displayName="Kenny" createdAt={123123123123123} />
+                        <Message text="Hello" photoURL={null} displayName="Danny" createdAt={123123123123123} />
+                        <Message text="Love" photoURL={null} displayName="Manny" createdAt={123123123123123} />
+                    </MessageListStyled>
+                    <FormStyled>
+                        <Form.Item>
+                            <Input placeholder="New message" bordered={false} autoComplete="off" />
+                        </Form.Item>
+                        <Button type="primary">Send</Button>
+                    </FormStyled>
+                </ContentStyled></>
+                ) : <Alert message="Let choose a room" type="info" showIcon style={{ margin: 5}} closable/>
+            }
+            
         </WrapperStyled>        
     )        
 }
